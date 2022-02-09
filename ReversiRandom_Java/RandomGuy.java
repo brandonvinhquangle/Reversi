@@ -4,6 +4,8 @@ import java.awt.event.*;
 import java.lang.*;
 import java.io.*;
 import java.net.*;
+
+import javax.sql.StatementEventListener;
 import javax.swing.*;
 import javax.swing.plaf.BorderUIResource.CompoundBorderUIResource;
 
@@ -34,16 +36,18 @@ class RandomGuy {
     final static int cornerDiagonal = -1;
 
     static int heuristicValues[][] = {
-        {cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal},
-        {cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal, cornerAdjacentEdge},
-        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
-        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
-        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
-        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
-        {cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal, cornerAdjacentEdge},
-        {cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal},
+            { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
+            { cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal,
+                    cornerAdjacentEdge },
+            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
+            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
+            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
+            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
+            { cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal,
+                    cornerAdjacentEdge },
+            { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
     };
-  
+
     final int ply = 3;
     final int inf = 999999;
     final int negInf = -999999;
@@ -118,25 +122,24 @@ class RandomGuy {
         for (int i = 0; i < 64; i++) {
             try {
                 System.out.println("Valid Move: " + validMoves[i]);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 break;
             }
         }
         int myMove = 999; // not valid so we know if it works or not
 
         ArrayList<ReversiNode> children = node.getChildren();
+        System.out.println("Number of children: " + children.size());
         for (int i = 0; i < 64; i++) {
             try {
                 if (children.get(i).getBestVal() == bestVal) {
                     myMove = children.get(i).getMoveIndex();
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 break;
             }
         }
-        
+
         return myMove;
     }
 
@@ -151,13 +154,18 @@ class RandomGuy {
         return copied;
     }
 
+    private int counter = 0;
+
     // Minimax / Alpha Beta Pruning Algorithm
     // Returns value associated with node it was called on
     private int minimax(ReversiNode currentNode, int depth, boolean maximizingPlayer, int alpha, int beta) {
-        // TODO: Fix the Base Case
+        System.out.println("-------------------" + counter++ + "-------------------");
+        System.out.println("Depth: " + depth);
+
+        // TODO: Fix the Base Case, fix getValidMoves, flip nodes during minimax
         // Check to see if you're out of Valid Moves
         getValidMoves(round + depth, currentNode.getState());
-        
+
         if (ply == depth || validMoves.length == 0) {
             return currentNode.getPlayerOneVal();
         }
@@ -179,6 +187,11 @@ class RandomGuy {
                 playerVal = 2;
             }
             newState[xVal][yVal] = playerVal;
+            int playerTurn = 1;
+            if (maximizingPlayer) {
+                playerTurn = 0;
+            }
+            changeColors(xVal, yVal, playerTurn, newState);
 
             ReversiNode n = new ReversiNode(currentNode, newState);
             n.setMoveIndex(i);
@@ -263,6 +276,82 @@ class RandomGuy {
         // System.out.println("checking out");
         // System.exit(1);
         // }
+    }
+
+    public static void checkDirection(int row, int col, int incx, int incy, int turn, int[][] state) {
+        int sequence[] = new int[7];
+        int seqLen;
+        int i, r, c;
+
+        seqLen = 0;
+        for (i = 1; i < 8; i++) {
+            r = row + incy * i;
+            c = col + incx * i;
+
+            if ((r < 0) || (r > 7) || (c < 0) || (c > 7))
+                break;
+
+            sequence[seqLen] = state[r][c];
+            seqLen++;
+        }
+
+        int count = 0;
+        for (i = 0; i < seqLen; i++) {
+            if (turn == 0) {
+                if (sequence[i] == 2)
+                    count++;
+                else {
+                    if ((sequence[i] == 1) && (count > 0))
+                        count = 20;
+                    break;
+                }
+            } else {
+                if (sequence[i] == 1)
+                    count++;
+                else {
+                    if ((sequence[i] == 2) && (count > 0))
+                        count = 20;
+                    break;
+                }
+            }
+        }
+
+        if (count > 10) {
+            if (turn == 0) {
+                i = 1;
+                r = row + incy * i;
+                c = col + incx * i;
+                while (state[r][c] == 2) {
+                    state[r][c] = 1;
+                    i++;
+                    r = row + incy * i;
+                    c = col + incx * i;
+                }
+            } else {
+                i = 1;
+                r = row + incy * i;
+                c = col + incx * i;
+                while (state[r][c] == 1) {
+                    state[r][c] = 2;
+                    i++;
+                    r = row + incy * i;
+                    c = col + incx * i;
+                }
+            }
+        }
+    }
+
+    public static void changeColors(int row, int col, int turn, int[][] state) {
+        int incx, incy;
+
+        for (incx = -1; incx < 2; incx++) {
+            for (incy = -1; incy < 2; incy++) {
+                if ((incx == 0) && (incy == 0))
+                    continue;
+
+                checkDirection(row, col, incx, incy, turn, state);
+            }
+        }
     }
 
     private boolean checkDirection(int state[][], int row, int col, int incx, int incy) {
