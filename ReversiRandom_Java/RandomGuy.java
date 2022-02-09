@@ -27,23 +27,21 @@ class RandomGuy {
     int validMoves[] = new int[64];
     int numValidMoves;
 
-    final static int cornerVal = 20;
-    final static int edgeVal = 5;
-    final static int normalVal = 1;
-    final static int cornerAdjacentEdge = -5;
-    final static int cornerDiagonal = -10;
+    // final static int cornerVal = 20;
+    // final static int edgeVal = 5;
+    // final static int normalVal = 1;
+    // final static int cornerAdjacentEdge = -5;
+    // final static int cornerDiagonal = -10;
 
     static int heuristicValues[][] = {
-            { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
-            { cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal,
-                    cornerAdjacentEdge },
-            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
-            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
-            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
-            { edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal },
-            { cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal,
-                    cornerAdjacentEdge },
-            { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
+            { 20, -5, 5, 5, 5, 5, -5, 20 },
+            { -5, -10, 1, 1, 1, 1, -10, -5 },
+            { 5, 1, 1, 1, 1, 1, 1, 5 },
+            { 5, 1, 1, 1, 1, 1, 1, 5 },
+            { 5, 1, 1, 1, 1, 1, 1, 5 },
+            { 5, 1, 1, 1, 1, 1, 1, 5 },
+            { -5, -10, 1, 1, 1, 1, -10, -5 },
+            { 20, -5, 5, 5, 5, 5, -5, 20 },
     };
 
     final int ply = 6;
