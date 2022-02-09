@@ -2,6 +2,14 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
+/* Stuff to do for next time:
+1. Different Scoreboards
+2. Fix Heuristic Values -> Look these up and don't be stupid by guessing
+3. Add an element of Randomness -> Monte-Carlo Algorithm
+4. Forcing opponent to take bad positions
+5. 
+*/
+
 class RandomGuy {
 
     public Socket s;
