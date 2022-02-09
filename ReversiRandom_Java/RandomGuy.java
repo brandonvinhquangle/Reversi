@@ -27,10 +27,23 @@ class RandomGuy {
     int validMoves[] = new int[64];
     int numValidMoves;
 
-    static int heuristicValues[][] = new int[8][8];
-    final int cornerVal = 4;
-    final int edgeVal = 2;
-    final int normalVal = 1;
+    final static int cornerVal = 4;
+    final static int edgeVal = 2;
+    final static int normalVal = 1;
+    final static int cornerAdjacentEdge = 0;
+    final static int cornerDiagonal = -1;
+
+    static int heuristicValues[][] = {
+        {cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal},
+        {cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal, cornerAdjacentEdge},
+        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
+        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
+        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
+        {edgeVal, normalVal, normalVal, normalVal, normalVal, normalVal, normalVal, edgeVal},
+        {cornerAdjacentEdge, cornerDiagonal, normalVal, normalVal, normalVal, normalVal, cornerDiagonal, cornerAdjacentEdge},
+        {cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal},
+    };
+  
     final int ply = 3;
     final int inf = 999999;
     final int negInf = -999999;
@@ -49,38 +62,25 @@ class RandomGuy {
         return total;
     }
 
-    // Determine if the spot on the board is a corner
-    private boolean isCorner(int i, int j) {
-        if ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7)) {
-            return true;
-        }
-        return false;
-    }
+    // // Determine if the spot on the board is a corner
+    // private boolean isCorner(int i, int j) {
+    //     if ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7)) {
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
-    // Determine if the spot on the board is an edge, including corners
-    private boolean isEdge(int i, int j) {
-        if (i == 0 || j == 0 || i == 7 || j == 7) {
-            return true;
-        }
-        return false;
-    }
+    // // Determine if the spot on the board is an edge, including corners
+    // private boolean isEdge(int i, int j) {
+    //     if (i == 0 || j == 0 || i == 7 || j == 7) {
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
     // main function that (1) establishes a connection with the server, and then
     // plays whenever it is this player's turn
     public RandomGuy(int _me, String host) {
-        // Initialize heuristicValues
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (isCorner(i, j)) {
-                    heuristicValues[i][j] = cornerVal;
-                } else if (isEdge(i, j)) {
-                    heuristicValues[i][j] = edgeVal;
-                } else {
-                    heuristicValues[i][j] = normalVal;
-                }
-            }
-        }
-
         me = _me;
         initClient(host);
 
