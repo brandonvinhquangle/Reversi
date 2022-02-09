@@ -108,7 +108,6 @@ class RandomGuy {
         // int myMove = generator.nextInt(numValidMoves);
 
         // TODO: Build Cool Algorithm Here
-
         if (round <= 4) {
             return 0;
         }
@@ -141,6 +140,7 @@ class RandomGuy {
         return myMove;
     }
 
+    // Copies the the board array to a new array
     private int[][] copyArray(int[][] arr) {
         int[][] copied = new int[8][8];
         for (int i = 0; i < 8; i++) {
@@ -152,13 +152,16 @@ class RandomGuy {
     }
 
     // Minimax / Alpha Beta Pruning Algorithm
-    // returns value associated with node it was called on
+    // Returns value associated with node it was called on
     private int minimax(ReversiNode currentNode, int depth, boolean maximizingPlayer, int alpha, int beta) {
-        if (ply == depth) {
+        // TODO: Fix the Base Case
+        // Check to see if you're out of Valid Moves
+        getValidMoves(round + depth, currentNode.getState());
+        
+        if (ply == depth || validMoves.length == 0) {
             return currentNode.getPlayerOneVal();
         }
 
-        getValidMoves(round + depth, currentNode.getState());
         for (int i = 0; i < 64; i++) {
             if (validMoves[i] == 0) {
                 break;
