@@ -33,7 +33,7 @@ class RandomGuy {
     final static int edgeVal = 2;
     final static int normalVal = 1;
     final static int cornerAdjacentEdge = 0;
-    final static int cornerDiagonal = -1;
+    final static int cornerDiagonal = -100;
 
     static int heuristicValues[][] = {
             { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
@@ -118,10 +118,10 @@ class RandomGuy {
 
         ReversiNode node = new ReversiNode(null, this.state);
         int bestVal = minimax(node, 0, true, negInf, inf);
-        getValidMoves(round, node.getState());
-        for (int i = 0; i < 64; i++) {
+        Vector<Integer> moves = getValidMoves(round, node.getState());
+        for (int i = 0; i < moves.size(); i++) {
             try {
-                System.out.println("Valid Move: " + validMoves[i]);
+                System.out.println("Valid Move: " + moves.get(i));
             } catch (Exception ex) {
                 break;
             }
@@ -130,7 +130,7 @@ class RandomGuy {
 
         ArrayList<ReversiNode> children = node.getChildren();
         System.out.println("Number of children: " + children.size());
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < moves.size(); i++) {
             try {
                 if (children.get(i).getBestVal() == bestVal) {
                     myMove = children.get(i).getMoveIndex();
@@ -138,6 +138,10 @@ class RandomGuy {
             } catch (Exception ex) {
                 break;
             }
+        }
+
+        if (children.size() == 0) {
+            return -1;
         }
 
         return myMove;
@@ -164,17 +168,14 @@ class RandomGuy {
 
         // TODO: Fix the Base Case, fix getValidMoves, flip nodes during minimax
         // Check to see if you're out of Valid Moves
-        getValidMoves(round + depth, currentNode.getState());
+        Vector<Integer> moves = getValidMoves(round + depth, currentNode.getState());
 
-        if (ply == depth || validMoves.length == 0) {
+        if (ply == depth || moves.size() == 0) {
             return currentNode.getPlayerOneVal();
         }
 
-        for (int i = 0; i < 64; i++) {
-            if (validMoves[i] == 0) {
-                break;
-            }
-            int move = validMoves[i];
+        for (int i = 0; i < moves.size(); i++) {
+            int move = moves.get(i);
             double moveDouble = move;
             int xVal = (int) Math.floor(moveDouble / 8.0);
             int yVal = move % 8;
@@ -232,30 +233,36 @@ class RandomGuy {
 
     // generates the set of valid moves for the player; returns a list of valid
     // moves (validMoves)
-    private void getValidMoves(int round, int state[][]) {
+    private Vector<Integer> getValidMoves(int round, int state[][]) {
         int i, j;
+
+        Vector<Integer> validMovesReturned = new Vector<Integer>();
 
         numValidMoves = 0;
         if (round < 4) {
             if (state[3][3] == 0) {
+                validMovesReturned.add(3 * 8 + 3);
                 validMoves[numValidMoves] = 3 * 8 + 3;
                 numValidMoves++;
             }
             if (state[3][4] == 0) {
+                validMovesReturned.add(3 * 8 + 4);
                 validMoves[numValidMoves] = 3 * 8 + 4;
                 numValidMoves++;
             }
             if (state[4][3] == 0) {
+                validMovesReturned.add(4 * 8 + 3);
                 validMoves[numValidMoves] = 4 * 8 + 3;
                 numValidMoves++;
             }
             if (state[4][4] == 0) {
+                validMovesReturned.add(4 * 8 + 4);
                 validMoves[numValidMoves] = 4 * 8 + 4;
                 numValidMoves++;
             }
             System.out.println("Valid Moves:");
             for (i = 0; i < numValidMoves; i++) {
-                System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
+                System.out.println(validMovesReturned.get(i) / 8 + ", " + validMovesReturned.get(i) % 8);
             }
         } else {
             System.out.println("Valid Moves:");
@@ -263,6 +270,7 @@ class RandomGuy {
                 for (j = 0; j < 8; j++) {
                     if (state[i][j] == 0) {
                         if (couldBe(state, i, j)) {
+                            validMovesReturned.add(i * 8 + j);
                             validMoves[numValidMoves] = i * 8 + j;
                             numValidMoves++;
                             System.out.println(i + ", " + j);
@@ -271,6 +279,8 @@ class RandomGuy {
                 }
             }
         }
+
+        return validMovesReturned;
 
         // if (round > 3) {
         // System.out.println("checking out");
