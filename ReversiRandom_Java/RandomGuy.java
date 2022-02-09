@@ -62,22 +62,6 @@ class RandomGuy {
         return total;
     }
 
-    // // Determine if the spot on the board is a corner
-    // private boolean isCorner(int i, int j) {
-    //     if ((i == 0 && j == 0) || (i == 0 && j == 7) || (i == 7 && j == 0) || (i == 7 && j == 7)) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // // Determine if the spot on the board is an edge, including corners
-    // private boolean isEdge(int i, int j) {
-    //     if (i == 0 || j == 0 || i == 7 || j == 7) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
     // main function that (1) establishes a connection with the server, and then
     // plays whenever it is this player's turn
     public RandomGuy(int _me, String host) {
