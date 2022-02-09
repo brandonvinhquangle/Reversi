@@ -38,7 +38,7 @@ class RandomGuy {
             { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
     };
 
-    final int ply = 4;
+    final int ply = 6;
     final int inf = 999999;
     final int negInf = -999999;
 
@@ -65,28 +65,28 @@ class RandomGuy {
         int myMove;
 
         while (true) {
-            System.out.println("Read");
+            //System.out.println("Read");
             readMessage();
 
             if (turn == me) {
-                System.out.println("Move");
+                //System.out.println("Move");
                 getValidMoves(round, state);
 
                 myMove = move();
-                System.out.println("--------------------------------------");
-                System.out.println("MyMove: " + myMove);
-                System.out.println("--------------------------------------");
+                //System.out.println("--------------------------------------");
+                //System.out.println("MyMove: " + myMove);
+                //System.out.println("--------------------------------------");
                 // myMove = generator.nextInt(numValidMoves); // select a move randomly
 
                 String sel = validMoves[myMove] / 8 + "\n" + validMoves[myMove] % 8;
 
-                System.out.println("Selection: " + validMoves[myMove] / 8 + ", " + validMoves[myMove] % 8);
+                ////System.out.println("Selection: " + validMoves[myMove] / 8 + ", " + validMoves[myMove] % 8);
 
                 sout.println(sel);
             }
         }
         // while (turn == me) {
-        // System.out.println("My turn");
+        // ////System.out.println("My turn");
 
         // readMessage();
         // }
@@ -111,7 +111,7 @@ class RandomGuy {
         Vector<Integer> moves = getValidMoves(round, node.getState());
         for (int i = 0; i < moves.size(); i++) {
             try {
-                System.out.println("Valid Move: " + moves.get(i));
+                //System.out.println("Valid Move: " + moves.get(i));
             } catch (Exception ex) {
                 break;
             }
@@ -119,7 +119,7 @@ class RandomGuy {
         int myMove = 999; // not valid so we know if it works or not
 
         ArrayList<ReversiNode> children = node.getChildren();
-        System.out.println("Number of children: " + children.size());
+        //System.out.println("Number of children: " + children.size());
         for (int i = 0; i < moves.size(); i++) {
             if (children.get(i).getBestVal() == bestVal) {
                 myMove = children.get(i).getMoveIndex();
@@ -153,8 +153,8 @@ class RandomGuy {
     // Minimax / Alpha Beta Pruning Algorithm
     // Returns value associated with node it was called on
     private int minimax(ReversiNode currentNode, int depth, boolean maximizingPlayer, int alpha, int beta) {
-        System.out.println("-------------------" + counter++ + "-------------------");
-        System.out.println("Depth: " + depth);
+        //System.out.println("-------------------" + counter++ + "-------------------");
+        //System.out.println("Depth: " + depth);
 
         // TODO: Fix the Base Case, fix getValidMoves, flip nodes during minimax
         // Check to see if you're out of Valid Moves
@@ -187,7 +187,7 @@ class RandomGuy {
             ReversiNode n = new ReversiNode(currentNode, newState);
             n.setMoveIndex(i);
             currentNode.addChild(n);
-            // System.out.println("Move option: " + move);
+            // //System.out.println("Move option: " + move);
         }
 
         if (maximizingPlayer) {
@@ -250,12 +250,12 @@ class RandomGuy {
                 validMoves[numValidMoves] = 4 * 8 + 4;
                 numValidMoves++;
             }
-            System.out.println("Valid Moves:");
+            //System.out.println("Valid Moves:");
             for (i = 0; i < numValidMoves; i++) {
-                System.out.println(validMovesReturned.get(i) / 8 + ", " + validMovesReturned.get(i) % 8);
+                //System.out.println(validMovesReturned.get(i) / 8 + ", " + validMovesReturned.get(i) % 8);
             }
         } else {
-            System.out.println("Valid Moves:");
+            //System.out.println("Valid Moves:");
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     if (state[i][j] == 0) {
@@ -263,7 +263,7 @@ class RandomGuy {
                             validMovesReturned.add(i * 8 + j);
                             validMoves[numValidMoves] = i * 8 + j;
                             numValidMoves++;
-                            System.out.println(i + ", " + j);
+                            //System.out.println(i + ", " + j);
                         }
                     }
                 }
@@ -273,7 +273,7 @@ class RandomGuy {
         return validMovesReturned;
 
         // if (round > 3) {
-        // System.out.println("checking out");
+        // //System.out.println("checking out");
         // System.exit(1);
         // }
     }
@@ -415,25 +415,25 @@ class RandomGuy {
         int i, j;
         String status;
         try {
-            // System.out.println("Ready to read again");
+            // //System.out.println("Ready to read again");
             turn = Integer.parseInt(sin.readLine());
 
             if (turn == -999) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    System.out.println(e);
+                    //System.out.println(e);
                 }
 
                 System.exit(1);
             }
 
-            // System.out.println("Turn: " + turn);
+            // //System.out.println("Turn: " + turn);
             round = Integer.parseInt(sin.readLine());
             t1 = Double.parseDouble(sin.readLine());
-            System.out.println(t1);
+            //System.out.println(t1);
             t2 = Double.parseDouble(sin.readLine());
-            System.out.println(t2);
+            //System.out.println(t2);
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     state[i][j] = Integer.parseInt(sin.readLine());
@@ -444,15 +444,15 @@ class RandomGuy {
             System.err.println("Caught IOException: " + e.getMessage());
         }
 
-        System.out.println("Turn: " + turn);
-        System.out.println("Round: " + round);
+        //System.out.println("Turn: " + turn);
+        //System.out.println("Round: " + round);
         for (i = 7; i >= 0; i--) {
             for (j = 0; j < 8; j++) {
-                System.out.print(state[i][j]);
+                //System.out.print(state[i][j]);
             }
-            System.out.println();
+            //System.out.println();
         }
-        System.out.println();
+        //System.out.println();
     }
 
     public void initClient(String host) {
@@ -464,7 +464,7 @@ class RandomGuy {
             sin = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
             String info = sin.readLine();
-            System.out.println(info);
+            //System.out.println(info);
         } catch (IOException e) {
             System.err.println("Caught IOException: " + e.getMessage());
         }
