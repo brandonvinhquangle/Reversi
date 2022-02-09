@@ -1,16 +1,6 @@
-import java.awt.*;
 import java.util.*;
-import java.awt.event.*;
-import java.lang.*;
 import java.io.*;
 import java.net.*;
-
-import javax.sql.StatementEventListener;
-import javax.swing.*;
-import javax.swing.plaf.BorderUIResource.CompoundBorderUIResource;
-
-import java.math.*;
-import java.text.*;
 
 class RandomGuy {
 
@@ -29,11 +19,11 @@ class RandomGuy {
     int validMoves[] = new int[64];
     int numValidMoves;
 
-    final static int cornerVal = 4;
-    final static int edgeVal = 2;
+    final static int cornerVal = 20;
+    final static int edgeVal = 5;
     final static int normalVal = 1;
-    final static int cornerAdjacentEdge = 0;
-    final static int cornerDiagonal = -100;
+    final static int cornerAdjacentEdge = -5;
+    final static int cornerDiagonal = -10;
 
     static int heuristicValues[][] = {
             { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
@@ -48,7 +38,7 @@ class RandomGuy {
             { cornerVal, cornerAdjacentEdge, edgeVal, edgeVal, edgeVal, edgeVal, cornerAdjacentEdge, cornerVal },
     };
 
-    final int ply = 3;
+    final int ply = 4;
     final int inf = 999999;
     final int negInf = -999999;
 
@@ -112,7 +102,7 @@ class RandomGuy {
         // int myMove = generator.nextInt(numValidMoves);
 
         // TODO: Build Cool Algorithm Here
-        if (round <= 4) {
+        if (round < 4 || round > 62) {
             return 0;
         }
 
@@ -131,17 +121,17 @@ class RandomGuy {
         ArrayList<ReversiNode> children = node.getChildren();
         System.out.println("Number of children: " + children.size());
         for (int i = 0; i < moves.size(); i++) {
-            try {
-                if (children.get(i).getBestVal() == bestVal) {
-                    myMove = children.get(i).getMoveIndex();
-                }
-            } catch (Exception ex) {
-                break;
+            if (children.get(i).getBestVal() == bestVal) {
+                myMove = children.get(i).getMoveIndex();
             }
         }
 
         if (children.size() == 0) {
             return -1;
+        }
+
+        if (myMove == 999) {
+            myMove = generator.nextInt(numValidMoves);
         }
 
         return myMove;
