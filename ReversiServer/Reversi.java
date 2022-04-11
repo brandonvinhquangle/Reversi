@@ -104,13 +104,13 @@ class MyCanvas extends JComponent {
         Color myDarkGray = new Color(100, 100, 100);
         
         g.setColor(turquois);
-        g.drawRect (5, 5, width-10, height - 110);
+        g.drawRect (5, 5, width - 10, height - 110);
         
         drawAlphabetBar(g, 10);
         drawAlphabetBar(g, height - 130);
         
         drawNumberBar(g, 6);
-        drawNumberBar(g, width-26);
+        drawNumberBar(g, width - 26);
         
         Color boardColor = new Color(30,160,30);
         g.setColor(boardColor);
