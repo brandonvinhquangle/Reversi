@@ -27,6 +27,7 @@ class RandomGuy {
     int validMoves[] = new int[64];
     int numValidMoves;
 
+    /* OLD HEURISTICS */
     // final static int cornerVal = 20;
     // final static int edgeVal = 5;
     // final static int normalVal = 1;
@@ -40,10 +41,11 @@ class RandomGuy {
     //     { 5, 1, 1, 0, 0, 1, 1, 5 },
     //     { 5, 1, 1, 0, 0, 1, 1, 5 },
     //     { 5, 1, 1, 1, 1, 1, 1, 5 },
-    //     { -5, 1, 1, 1, 1, 1, -10, -5 },
+    //     { -5, -10, 1, 1, 1, 1, -10, -5 },
     //     { 20, -5, 5, 5, 5, 5, -5, 20 },
     // };
 
+    /* NEW HEURISTICS */
     static int heuristicValues[][] = {
         { 99, -8, 8, 6, 6, 8, -8, 99 },
         { -8, -24, -4, -3, -3, -4, -24, -8 },
