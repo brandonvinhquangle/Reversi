@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.TimeUnit;
 
 /* Stuff to do for next time:
 1. Different Scoreboards
@@ -45,23 +46,27 @@ class RandomGuy {
     //     { 20, -5, 5, 5, 5, 5, -5, 20 },
     // };
 
-    /* NEW HEURISTICS */
-    static int heuristicValues[][] = {
-        { 99, -8, 8, 6, 6, 8, -8, 99 },
-        { -8, -24, -4, -3, -3, -4, -24, -8 },
-        { 8, -4, 7, 4, 4, 7, -4, 8 },
-        { 6, -3, 4, 0, 0, 4, -3, 6 },
-        { 6, -3, 4, 0, 0, 4, -3, 6 },
-        { 8, -4, 7, 4, 4, 7, -4, 8 },
-        { -8, -24, -4, -3, -3, -4, -24, -8 },
-        { 99, -8, 8, 6, 6, 8, -8, 99 },
-    };
-
-    final int ply = 8;
+    final int ply = 6;
     final int inf = 999999;
     final int negInf = -999999;
+    final static int negInfh = -999999;
 
-    public static int getPlayerOneVal(int[][] state) {
+    /* NEW HEURISTICS */
+    /*
+    static int heuristicValues[][] = {
+        { 200, negInfh, 8, 6, 6, 8, negInfh, 200 },
+        { negInfh, negInfh, -4, -3, -3, -4, negInfh, negInfh },
+        { 8, -4, 7, 4, 4, 7, -4, 8 },
+        { 6, -3, 4, 0, 0, 4, -3, 6 },
+        { 6, -3, 4, 0, 0, 4, -3, 6 },
+        { 8, -4, 7, 4, 4, 7, -4, 8 },
+        { negInfh, negInfh, -4, -3, -3, -4, negInfh, negInfh },
+        { 200, negInfh, 8, 6, 6, 8, negInfh, 200 },
+    };
+    */
+
+    public static int getPlayerOneVal(int[][] state, ReversiNode n) {
+        int[][] heuristicValues = n.getHeuristics();
         int total = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -92,14 +97,21 @@ class RandomGuy {
                 getValidMoves(round, state);
 
                 myMove = move();
-                //System.out.println("--------------------------------------");
-                //System.out.println("MyMove: " + myMove);
-                //System.out.println("--------------------------------------");
+                System.out.println("--------------------------------------");
+                System.out.println("MyMove: " + myMove);
+                System.out.println("--------------------------------------");
+
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                }
+                catch (Exception e) {
+
+                }
                 // myMove = generator.nextInt(numValidMoves); // select a move randomly
 
                 String sel = validMoves[myMove] / 8 + "\n" + validMoves[myMove] % 8;
 
-                ////System.out.println("Selection: " + validMoves[myMove] / 8 + ", " + validMoves[myMove] % 8);
+                // System.out.println("Selection: " + validMoves[myMove] / 8 + ", " + validMoves[myMove] % 8);
 
                 sout.println(sel);
             }
@@ -122,10 +134,10 @@ class RandomGuy {
 
         // TODO: Build Cool Algorithm Here
         if (round < 4 || round > 62) {
-            return 0;
+            return generator.nextInt(numValidMoves);
         }
 
-        ReversiNode node = new ReversiNode(null, this.state);
+        ReversiNode node = new ReversiNode(null, this.state, true, 5, 5);
         int bestVal = minimax(node, 0, true, negInf, inf);
         Vector<Integer> moves = getValidMoves(round, node.getState());
         for (int i = 0; i < moves.size(); i++) {
@@ -139,7 +151,7 @@ class RandomGuy {
 
         ArrayList<ReversiNode> children = node.getChildren();
         //System.out.println("Number of children: " + children.size());
-        for (int i = 0; i < moves.size(); i++) {
+        for (int i = 0; i < children.size(); i++) {
             if (children.get(i).getBestVal() == bestVal) {
                 myMove = children.get(i).getMoveIndex();
             }
@@ -167,6 +179,15 @@ class RandomGuy {
         return copied;
     }
 
+    private void printState(int[][] state) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(state[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
     private int counter = 0;
 
     // Minimax / Alpha Beta Pruning Algorithm
@@ -174,10 +195,31 @@ class RandomGuy {
     private int minimax(ReversiNode currentNode, int depth, boolean maximizingPlayer, int alpha, int beta) {
         //System.out.println("-------------------" + counter++ + "-------------------");
         //System.out.println("Depth: " + depth);
+        boolean dontTake = false;
 
         // TODO: Fix the Base Case, fix getValidMoves, flip nodes during minimax
         // Check to see if you're out of Valid Moves
-        Vector<Integer> moves = getValidMoves(round + depth, currentNode.getState());
+        Vector<Integer> moves = null;
+
+        if (maximizingPlayer) {
+            moves = getValidMoves(round + depth, currentNode.getState());
+        }
+        else {
+            int[][] currState = copyArray(currentNode.getState());
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (currState[i][j] == 1) {
+                        currState[i][j] = 2;
+                    }
+                    else if (currState[i][j] == 2) {
+                        currState[i][j] = 1;
+                    }
+                }
+            }
+            moves = getValidMoves(round + depth, currState);
+        }
+
+        int numMoves = moves.size();
 
         if (ply == depth || moves.size() == 0) {
             return currentNode.getPlayerOneVal();
@@ -189,6 +231,14 @@ class RandomGuy {
             int xVal = (int) Math.floor(moveDouble / 8.0);
             int yVal = move % 8;
 
+            if (ReversiNode.nextToCorner(xVal, yVal)) {
+                continue;
+            }
+
+            if (ReversiNode.nextToCorner(xVal, yVal)) {
+                dontTake = true;
+            }
+            
             int[][] newState = copyArray(currentNode.getState());
             int playerVal = 0;
             if (maximizingPlayer) {
@@ -203,13 +253,22 @@ class RandomGuy {
             }
             changeColors(xVal, yVal, playerTurn, newState);
 
-            ReversiNode n = new ReversiNode(currentNode, newState);
+            ReversiNode n = new ReversiNode(currentNode, newState, maximizingPlayer, xVal, yVal);
             n.setMoveIndex(i);
             currentNode.addChild(n);
-            // //System.out.println("Move option: " + move);
+            /// System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            /// printState(newState);
+            /// System.out.println("Move Option: " + move);
         }
 
+        /// System.out.println("{{{-------------------------------------------------------}}}");
+
         if (maximizingPlayer) {
+            int superneg = -999999999;
+            if (dontTake) {
+                currentNode.setBestVal(superneg);
+                return superneg;
+            }
             int bestVal = negInf;
             ArrayList<ReversiNode> children = currentNode.getChildren();
             for (int i = 0; i < children.size(); i++) {
@@ -221,7 +280,9 @@ class RandomGuy {
                     break;
                 }
             }
+            bestVal = bestVal + numMoves;
             currentNode.setBestVal(bestVal);
+            /// System.out.println("Best Value: " + bestVal);
             return bestVal;
         } else {
             int bestVal = inf;
@@ -235,7 +296,9 @@ class RandomGuy {
                     break;
                 }
             }
+            bestVal = bestVal - numMoves;
             currentNode.setBestVal(bestVal);
+            /// System.out.println("Best Value: " + bestVal);
             return bestVal;
         }
     }
@@ -269,12 +332,12 @@ class RandomGuy {
                 validMoves[numValidMoves] = 4 * 8 + 4;
                 numValidMoves++;
             }
-            //System.out.println("Valid Moves:");
+            // System.out.println("Valid Moves:");
             for (i = 0; i < numValidMoves; i++) {
-                //System.out.println(validMovesReturned.get(i) / 8 + ", " + validMovesReturned.get(i) % 8);
+                // System.out.println(validMovesReturned.get(i) / 8 + ", " + validMovesReturned.get(i) % 8);
             }
         } else {
-            //System.out.println("Valid Moves:");
+            // System.out.println("Valid Moves:");
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     if (state[i][j] == 0) {
@@ -282,7 +345,7 @@ class RandomGuy {
                             validMovesReturned.add(i * 8 + j);
                             validMoves[numValidMoves] = i * 8 + j;
                             numValidMoves++;
-                            //System.out.println(i + ", " + j);
+                            // System.out.println(i + ", " + j);
                         }
                     }
                 }
